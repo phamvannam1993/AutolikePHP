@@ -9,16 +9,15 @@
 namespace App\Models;
 
 
-class GiftCode extends  \Moloquent
+class GiftCode extends \Moloquent
 {
-    protected $connection = 'mongodb';
-    protected $collection = 'gift_code';
     CONST STATUS_ACTIVE = 'Active';
     CONST STATUS_PAUSE = 'Pause';
     CONST STATUS_STOP = 'Stop';
     CONST STATUS_EXPIRED = 'Expired';
     CONST STATUS_USED = 'Used';
-
+    protected $connection = 'mongodb';
+    protected $collection = 'gift_code';
     /**
      * The attributes that are mass assignable.
      *

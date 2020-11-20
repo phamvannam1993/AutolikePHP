@@ -29,7 +29,7 @@
     <link href="{{ url('css') }}/custom.min.css" rel="stylesheet">
 
     <!-- Custom Personal Style -->
-    <link href="{{ url('css') }}/main.css" rel="stylesheet">
+    <link href="{{ url('css') }}/main.css?time={{time()}}" rel="stylesheet">
 
     <!-- Date picker -->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">

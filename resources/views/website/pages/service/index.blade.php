@@ -24,13 +24,12 @@
                         <tr>
                             <th>#</th>
                             <th>Mã giao dịch</th>
-                            <th>Thành viên</th>
                             <th>UID/PageID</th>
-                            <th>Số likes</th>
-                            <th>Số bài post</th>
+                            <th>Dịch vụ</th>
                             <th>Trạng thái</th>
-                            <th>Thời gian</th>
-                            <th>Ghi chú</th>
+                            <th>Ngày mua dịch vụ</th>
+                            <th>Ngày kết thúc dịch vụ</th>
+                            <th>Ngày được cộng thêm</th>
                             <th>Thời gian cập nhật</th>
                             <th>Thao tác</th>
                         </tr>
@@ -40,12 +39,11 @@
                             <tr data-toggle="collapse" data-target="#detail-service-{{ $service->code }}">
                                 <th scope="row">{{ ($key + ($services->currentPage() - 1) * $services->perPage() + 1) }}</th>
                                 <td>
-                                    <strong>
-                                        {{ $service->code }}
-                                    </strong>
-                                </td>
-                                <td>
-                                    {{ isset($userArr[$service->user_id]) ? $userArr[$service->user_id] : '' }}
+                                    <a href="javascript:;">
+                                        <strong>
+                                            {{ $service->code }}
+                                        </strong>
+                                    </a>
                                 </td>
                                 <td>
                                     <a href="https://www.facebook.com/{{ $service->fanpage_id }}" target="_blank" style="text-decoration: underline;">
@@ -53,14 +51,11 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <span class="label label-info" style="font-size: 100%;">
-                                        {{ isset($dataService[ $service->code]['number_post']) ? $dataService[ $service->code]['number_like_per_post'] : 0 }}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="label label-warning" style="font-size: 100%;">
-                                        {{ isset($dataService[ $service->code]['number_post']) ? $dataService[ $service->code]['number_post'] : 0 }}
-                                    </span>
+                                    @if($service->time_used == 1)
+                                        Ngày
+                                    @else
+                                        Tháng
+                                    @endif
                                 </td>
                                 <td>
                                     <span class="view-service-status-active-{{ $service->code }} label label-success @if($service->status == \App\Models\Service::STATUS_PAUSE) hidden @endif"
@@ -81,8 +76,18 @@
                                         </strong>
                                     </span>
                                 </td>
-                                <td>{{ $service->created_at }}</td>
-                                <td>{{ $service->note }}</td>
+                                <td>{{date('Y-m-d H:i:s', strtotime($service->created_at)) }}</td>
+                                <td>
+                                    @if($service->time_used == 2)
+                                        <?php $day_deff = 2 + $service->day_add; ?>
+                                        {{date('Y-m-d', strtotime($service->created_at .' + '.$day_deff.' days'))}}
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($service->time_used == 2)
+                                        {{isset($service->day_add) ? $service->day_add : 0 }} ngày
+                                    @endif
+                                </td>
                                 <td>{{ $service->updated_at }}</td>
                                 <td>
                                     <a href="javascript:;" class="view-service-status-pause-{{ $service->code }} btn btn-success @if($service->status == \App\Models\Service::STATUS_ACTIVE) hidden @endif"
@@ -134,15 +139,35 @@
                                                     </span>
                                                 </div>
                                                 <div class="col-sm-2 text-center">
-                                                    <p>{{date('Y/m/d H:i:s', strtotime($dataPost['post_time']))}}</p>
+                                                    <p>{{$dataPost['created_at']}}</p>
                                                 </div>
                                                 <div class="col-sm-2 text-center">
-                                                    <p>{{date('Y/m/d H:i:s', strtotime($dataPost['updated_time']))}}</p>
+                                                    <p>{{$dataPost['created_at']}}</p>
                                                 </div>
                                             </div>
                                         @endforeach
                                     </td>
                                     <td colspan="1"></td>
+                                    <!-- header -->
+                                </tr>
+                            @else
+                                <tr id="detail-service-{{ $service->code }}" class="collapse">
+                                    <!-- header -->
+                                    <td colspan="2"></td>
+                                    <td colspan="5">
+                                        <div class="row" style="padding-bottom: 5px;">
+                                            <div class="col-sm-2 text-center">
+                                                <strong>STT</strong>
+                                            </div>
+                                            <div class="col-sm-6 text-center">
+                                                <strong>Bài post</strong>
+                                            </div>
+                                            <div class="col-sm-4 text-center">
+                                                <strong>Số like trong ngày</strong>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td colspan="2"></td>
                                     <!-- header -->
                                 </tr>
                             @endif

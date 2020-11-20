@@ -8,12 +8,12 @@
 
 namespace App\Http\Controllers\Website;
 
+use App\Models\Setting;
 use App\Http\Controllers\Controller;
-use App\Helpers\LoginHelper;
-use Pusher\Pusher;
+use App\Singleton\SettingSingleton;
 use App\Models\User;
-use App\Models\Transaction;
-use App\Models\Service;
+use App\Models\Package;
+use App\Helpers\LoginHelper;
 
 class HomeController extends Controller
 {
@@ -26,12 +26,59 @@ class HomeController extends Controller
         $LoginHelper = new LoginHelper();
         $checkLogin = $LoginHelper->checkSession();
         if(!$checkLogin) {
-            return redirect(route('admin.login'));
+            return redirect()->route('admin.login');
         }
-        $number_user = User::count();
-        $number_transaction = Transaction::where('status', Transaction::STATUS_COMPLETED)->count();
-        $number_service = Service::where('status', Service::STATUS_ACTIVE)->count();
-        $total_transaction_value = Transaction::where('status', Transaction::STATUS_COMPLETED)->sum('value');
-        return view('website.pages.dashboard.home', ['userDetail' => $checkLogin, 'number_user' => $number_user, 'number_service' => $number_service, 'number_transaction' => $number_transaction, 'total_transaction_value' => $total_transaction_value]);
+		$setting = Setting::all()->keyBy('key');
+        $result = User::where('_id', $checkLogin['userId'])->first();
+        $dataLogin = $result;
+        $dataLogin['userId'] = $result['_id'];
+        session(['dataLogin' => $dataLogin]);
+        $settingsSingleton = new SettingSingleton();
+        $settings = $settingsSingleton->getSetting();
+		$likePage =  $setting['like_page']->value;
+		$addfriend = $setting['sub_follow']->value;
+		$type = 0;
+		$packageList = Package::orderBy('money', 'ASC')->get()->toArray();
+        return view('website.pages.dashboard.home', compact('type', 'settings', 'likePage', 'addfriend', 'packageList'));
+    }
+
+    public function money() {
+        $LoginHelper = new LoginHelper();
+        $checkLogin = $LoginHelper->checkSession();
+        if(!$checkLogin) {
+            return redirect()->route('admin.login');
+        }
+        $setting = Setting::all()->keyBy('key');
+        $result = User::where('_id', $checkLogin['userId'])->first();
+        $dataLogin = $result;
+        $dataLogin['userId'] = $result['_id'];
+        session(['dataLogin' => $dataLogin]);
+        $settingsSingleton = new SettingSingleton();
+        $settings = $settingsSingleton->getSetting();
+        $likePage =  $setting['like_page']->value;
+        $addfriend = $setting['sub_follow']->value;
+        $type = 1;
+        $packageList = Package::orderBy('money', 'ASC')->get()->toArray();
+        return view('website.pages.dashboard.home', compact('type', 'settings', 'likePage', 'addfriend', 'packageList'));
+    }
+
+    public function buyService() {
+        $LoginHelper = new LoginHelper();
+        $checkLogin = $LoginHelper->checkSession();
+        if(!$checkLogin) {
+            return redirect()->route('admin.login');
+        }
+        $setting = Setting::all()->keyBy('key');
+        $result = User::where('_id', $checkLogin['userId'])->first();
+        $dataLogin = $result;
+        $dataLogin['userId'] = $result['_id'];
+        session(['dataLogin' => $dataLogin]);
+        $settingsSingleton = new SettingSingleton();
+        $settings = $settingsSingleton->getSetting();
+        $likePage =  $setting['like_page']->value;
+        $addfriend = $setting['sub_follow']->value;
+        $type = 2;
+        $packageList = Package::orderBy('money', 'ASC')->get()->toArray();
+        return view('website.pages.dashboard.home', compact('type', 'settings', 'likePage', 'addfriend', 'packageList'));
     }
 }

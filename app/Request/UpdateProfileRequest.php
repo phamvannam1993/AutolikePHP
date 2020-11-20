@@ -15,7 +15,7 @@ class UpdateProfileRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string|required',
+            'fullname' => 'string|required',
             'bank_name' => 'string|nullable',
             'bank_account_name' => 'string|nullable',
             'bank_account_number' => 'string|nullable',

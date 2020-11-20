@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Like4.Vip Manager</title>
+    <title>Like4.Vip </title>
 
     <!-- Bootstrap -->
     <link href="{{ config('app.asset_url') }}/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -30,7 +30,6 @@
 </head>
 <body class="login">
     <div>
-        <a class="hiddenanchor" id="signup"></a>
         <div class="login_wrapper">
             <div class="animate form login_form">
                 <section class="login_content">
@@ -38,7 +37,7 @@
                         <h1>Đăng nhập tài khoản</h1>
                         @if ($errors->any())
                             <div class="alert alert-danger">
-                                <strong>{{ $errors->first() }}</strong>
+                                <strong style="font-weight: 500;">{{ $errors->first() }}</strong>
                             </div>
                         @endif
                         {{ csrf_field() }}
@@ -53,13 +52,14 @@
                         </div>
                         <div>
                             <button class="btn btn-default submit" type="submit">Đăng nhập</button>
+                            {{--<a class="reset_pass" href="#">Lost your password?</a>--}}
                         </div>
 
                         <div class="clearfix"></div>
 
                         <div class="separator">
                             <p class="change_link">Bạn chưa có tài khoản?
-                                <a href="#signup" class="to_register"> Đăng ký </a>
+                                <a href="{{ route('website.auth.register') }}" class="to_register"> Đăng ký </a>
                             </p>
 
                             <div class="clearfix"></div>

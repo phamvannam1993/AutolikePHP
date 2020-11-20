@@ -4,25 +4,19 @@
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel">
                 <div class="x_title">
-                    <h2>Danh sách thành viên</h2>
+                    <h2>Danh sách cộng tác viên</h2>
                     <div class="clearfix"></div>
                 </div>
-                <a href="{{route('admin.user.form')}}" class="btn btn-primary">Thêm mới thành viên</a>
                 <div class="x_content">
                     <table class="table table-bordered">
                         <thead>
                         <tr>
                             <th>STT</th>
                             <th>Họ và tên</th>
-                            <th>Số điện thoại</th>
-                            <th>Tổng tiền nạp</th>
-                            <th>Số tiền đã tiêu</th>
-                            <th>Số dư</th>
                             <th>Trạng thái</th>
-                            <th>Đăng nhập lần cuối</th>
                             <th>Ngày đăng kí</th>
-                            <th>Thao tác</th>
-                            <th>Lịch sử giao dịch</th>
+                            <th>Đăng nhập lần cuối</th>
+                            <th>Ghi chú</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -30,10 +24,6 @@
                             <tr>
                                 <th scope="row">{{ $key + 1 }}</th>
                                 <td>{{ $user->fullname }}</td>
-                                <td>{{ $user->username }}</td>
-                                <td>{{ isset($user->deposit_amount) ? number_format($user->deposit_amount) : 0 }} đ</td>
-                                <td>{{ isset($user->balance_use) ? number_format($user->balance_use) : 0 }} đ</td>
-                                <td>{{ number_format($user->balance) }} đ</td>
                                 <td>
                                     <span class="view-status-active-{{ $user->id }} label label-success @if($user->status == \App\Models\User::STATUS_BLOCK) hidden @endif" style="font-size: 100%;">
                                         <i class="fa fa-thumbs-o-up"></i>
@@ -48,22 +38,9 @@
                                         </strong>
                                     </span>
                                 </td>
-                                <td>{{ $user->last_time_login }}</td>
                                 <td>{{ $user->created_at }}</td>
-                                <td>
-                                    <a href="javascript:;" class="view-status-block-{{ $user->id }} btn btn-success @if($user->status == \App\Models\User::STATUS_ACTIVE) hidden @endif"
-                                       id=""
-                                       onclick="updateUserStatus(this, '{{ $user->id }}', 'Active')"
-                                    >
-                                        Kích hoạt
-                                    </a>
-                                    <a href="javascript:;" class="view-status-active-{{ $user->id }} btn btn-warning @if($user->status == \App\Models\User::STATUS_BLOCK) hidden @endif"
-                                       onclick="updateUserStatus(this, '{{ $user->id }}', 'Block')"
-                                    >
-                                        Khóa
-                                    </a>
-                                </td>
-                                <td> <a class="btn btn-info" href="{{route('website.transaction.history', ['userId' =>$user->_id])}}">lịch sử giao dịch</a></td>
+                                <td>{{ $user->last_time_login }}</td>
+                                <td></td>
                             </tr>
                         @endforeach
                         </tbody>

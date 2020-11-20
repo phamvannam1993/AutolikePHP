@@ -108,50 +108,50 @@
 @endsection
 
 @push('pageScripts')
-<script>
-    function updateStatus(element, serviceCode, status) {
-        var btn = $(element);
-        $.ajax({
-            type: "POST",
-            url: '{{ route('website.gift-code.apiUpdateStatus') }}',
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            data: {
-                code: serviceCode,
-                status: status
-            },
-            beforeSend: function() {
-                btn.prop('disabled', true);
-                btn.prepend('<i class="fa fa-spinner fa-spin"></i>');
-            },
-            success: function(response) {
-                btn.prop('disabled', false);
-                btn.find('i.fa-spinner').remove();
-                if (response.success == 1) {
-                    if (response.data.status == '{{ \App\Models\GiftCode::STATUS_PAUSE }}') {
-                        $('.view-status-active-' + response.data.code).addClass('hidden');
-                        $('.view-status-pause-' + response.data.code).removeClass('hidden');
-                        $('.view-status-used-' + response.data.code).addClass('hidden');
-                    } else if (response.data.status == '{{ \App\Models\GiftCode::STATUS_USED }}') {
-                        $('.view-status-active-' + response.data.code).addClass('hidden');
-                        $('.view-status-pause-' + response.data.code).addClass('hidden');
-                        $('.view-status-used-' + response.data.code).removeClass('hidden');
+    <script>
+        function updateStatus(element, serviceCode, status) {
+            var btn = $(element);
+            $.ajax({
+                type: "POST",
+                url: '{{ route('website.gift-code.apiUpdateStatus') }}',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: {
+                    code: serviceCode,
+                    status: status
+                },
+                beforeSend: function() {
+                    btn.prop('disabled', true);
+                    btn.prepend('<i class="fa fa-spinner fa-spin"></i>');
+                },
+                success: function(response) {
+                    btn.prop('disabled', false);
+                    btn.find('i.fa-spinner').remove();
+                    if (response.success == 1) {
+                        if (response.data.status == '{{ \App\Models\GiftCode::STATUS_PAUSE }}') {
+                            $('.view-status-active-' + response.data.code).addClass('hidden');
+                            $('.view-status-pause-' + response.data.code).removeClass('hidden');
+                            $('.view-status-used-' + response.data.code).addClass('hidden');
+                        } else if (response.data.status == '{{ \App\Models\GiftCode::STATUS_USED }}') {
+                            $('.view-status-active-' + response.data.code).addClass('hidden');
+                            $('.view-status-pause-' + response.data.code).addClass('hidden');
+                            $('.view-status-used-' + response.data.code).removeClass('hidden');
+                        } else {
+                            $('.view-status-active-' + response.data.code).removeClass('hidden');
+                            $('.view-status-pause-' + response.data.code).addClass('hidden');
+                            $('.view-status-used-' + response.data.code).addClass('hidden');
+                        }
+                        toastr.success(response.message);
                     } else {
-                        $('.view-status-active-' + response.data.code).removeClass('hidden');
-                        $('.view-status-pause-' + response.data.code).addClass('hidden');
-                        $('.view-status-used-' + response.data.code).addClass('hidden');
+                        toastr.error(response.message);
                     }
-                    toastr.success(response.message);
-                } else {
-                    toastr.error(response.message);
+                },
+                complete: function(){
+                    btn.prop('disabled', false);
+                    btn.find('i.fa-spinner').remove();
                 }
-            },
-            complete: function(){
-                btn.prop('disabled', false);
-                btn.find('i.fa-spinner').remove();
-            }
-        });
-    }
-</script>
+            });
+        }
+    </script>
 @endpush

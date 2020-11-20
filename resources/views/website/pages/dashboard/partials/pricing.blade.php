@@ -2,118 +2,30 @@
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
             <div class="x_title">
-                <h2>Nạp tiền</h2>
+                <h1>NẠP TIỀN</h1>
                 <div class="clearfix"></div>
             </div>
-            <div class="x_content">
+            <div class="">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="col-md-3 col-sm-6 col-xs-12">
-                            <div class="pricing">
-                                <div class="title">
-                                    <h2>Gói 1</h2>
-                                    <h1>100.000 VNĐ</h1>
-                                    <button onclick="makeTransaction(this, 100)" class="btn btn-warning btn-block" role="button">
-                                        <i></i> Nạp ngay
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-sm-6 col-xs-12">
-                            <div class="pricing">
-                                <div class="title">
-                                    <h2>Gói 2</h2>
-                                    <h1>200.000 VNĐ</h1>
-                                    <button onclick="makeTransaction(this, 200)" class="btn btn-warning btn-block" role="button">Nạp ngay</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-sm-6 col-xs-12">
-                            <div class="pricing">
-                                <div class="title">
-                                    <h2>Gói 3</h2>
-                                    <h1>500.000 VNĐ</h1>
-                                    <button onclick="makeTransaction(this, 500)" class="btn btn-warning btn-block" role="button">Nạp ngay</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-sm-6 col-xs-12">
-                            <div class="pricing ui-ribbon-container">
-                                <div class="ui-ribbon-wrapper">
-                                    <div class="ui-ribbon">
-                                        +5%
-                                    </div>
-                                </div>
-                                <div class="title">
-                                    <h2>Gói 4</h2>
-                                    <h1>1.000.000 VNĐ</h1>
-                                    <button onclick="makeTransaction(this, 1000)" class="btn btn-warning btn-block" role="button">Nạp ngay</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-sm-6 col-xs-12">
-                            <div class="pricing ui-ribbon-container">
-                                <div class="ui-ribbon-wrapper">
-                                    <div class="ui-ribbon">
-                                        +10%
-                                    </div>
-                                </div>
-                                <div class="title">
-                                    <h2>Gói 5</h2>
-                                    <h1>2.000.000 VNĐ</h1>
-                                    <button onclick="makeTransaction(this, 2000)" class="btn btn-warning btn-block" role="button">Nạp ngay</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-sm-6 col-xs-12">
-                            <div class="pricing ui-ribbon-container">
-                                <div class="ui-ribbon-wrapper">
-                                    <div class="ui-ribbon">
-                                        +15%
-                                    </div>
-                                </div>
-                                <div class="title">
-                                    <h2>Gói 6</h2>
-                                    <h1>3.000.000 VNĐ</h1>
-                                    <button onclick="makeTransaction(this, 3000)" class="btn btn-warning btn-block" role="button">Nạp ngay</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-sm-6 col-xs-12">
-                            <div class="pricing ui-ribbon-container">
-                                <div class="ui-ribbon-wrapper">
-                                    <div class="ui-ribbon">
-                                        +20%
-                                    </div>
-                                </div>
-                                <div class="title">
-                                    <h2>Gói 7</h2>
-                                    <h1>5.000.000 VNĐ</h1>
-                                    <button onclick="makeTransaction(this, 5000)" class="btn btn-warning btn-block" role="button">Nạp ngay</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 col-sm-6 col-xs-12">
-                            <div class="pricing ui-ribbon-container">
-                                <div class="ui-ribbon-wrapper">
-                                    <div class="ui-ribbon">
-                                        +25%
-                                    </div>
-                                </div>
-                                <div class="title">
-                                    <h2>Gói 8</h2>
-                                    <h1>10.000.000 VNĐ</h1>
-                                    <button onclick="makeTransaction(this, 10000)" class="btn btn-warning btn-block" role="button">Nạp ngay</button>
-                                </div>
-                            </div>
-                        </div>
+						@foreach($packageList as $package)
+							<div class="col-md-4 col-sm-6 col-xs-12">
+								<div class="pricing ui-ribbon-container">
+									@if($package['bonus'] > 0)
+										<div class="ui-ribbon-wrapper">
+											<div class="ui-ribbon">
+												+{{ $package['bonus'] }}%
+											</div>
+										</div>
+									@endif
+									<div class="title">
+										<h2>GÓI NẠP TIỀN</h2>
+										<h1>{{ number_format($package['money'])}} VNĐ</h1>
+										<button onclick="makeTransaction(this, '{{ $package['_id']  }}')" class="btn btn-warning btn-block" role="button">NẠP NGAY</button>
+									</div>
+								</div>
+							</div>
+						@endforeach
                     </div>
                 </div>
             </div>
@@ -130,6 +42,10 @@
     }
     .ui-ribbon-container .ui-ribbon {
         background-color: #ec4545;
+    }
+
+    .pricing h1 {
+        font-size: 24px !important;
     }
 </style>
 

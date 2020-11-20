@@ -120,7 +120,6 @@ class ResponseJson
             'param' => $params['param'],
             'status' => isset($params['statusCode']) ? $params['statusCode'] : null,
         ];
-
         $result['message'] = [trans('error.have_problem_please_report')];
         if (config('app.debug') || empty($params['isSystemError'])) {
             $result['message'] = $params['message'];

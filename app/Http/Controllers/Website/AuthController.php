@@ -9,16 +9,19 @@
 namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
-use App\Models\Manager;
+use App\Models\User;
 use App\Request\LoginRequest;
+use App\Request\RegisterRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    protected $managerModel;
-    public function __construct(Manager $managerModel)
+    protected $userModel;
+    public function __construct(User $userModel)
     {
-        $this->managerModel = $managerModel;
+        $this->userModel = $userModel;
     }
 
     public function login()
@@ -26,9 +29,15 @@ class AuthController extends Controller
         return view('website.pages.auth.login');
     }
 
+    public function register(Request $request)
+    {
+        $referrerCode = $request->input('referrer_code');
+        return view('website.pages.auth.register', compact('referrerCode'));
+    }
+
     public function doLogin(LoginRequest $request)
     {
-        try{
+        try {
             $params = [
                 'phone' => $request->input('phone'),
                 'password' => $request->input('password')
@@ -36,13 +45,22 @@ class AuthController extends Controller
             if (!$params['phone'] || !$params['password']) {
                 return false;
             }
-            $manager = $this->managerModel->checkLogin($params);
-            if (!$manager) {
+            $user = $this->userModel->checkLogin($params);
+            if (!$user) {
                 return redirect()->route('website.auth.login')
                     ->withErrors(trans('auth.login_fail'))
                     ->withInput();
             }
-            Auth::login($manager);
+
+            if ($user->status == User::STATUS_BLOCK) {
+                return redirect()->route('website.auth.login')
+                    ->withErrors(trans('auth.blocked'))
+                    ->withInput();
+            }
+
+            $user->last_time_login = date('Y-m-d H:i:s');
+            $user->save();
+            Auth::login($user);
             return redirect()->route('website.home.index');
         } catch (\Exception $exception) {
             return redirect()->route('website.auth.login')
@@ -55,5 +73,60 @@ class AuthController extends Controller
     {
         Auth::logout();
         return redirect()->route('website.auth.login');
+    }
+
+    public function doRegister(RegisterRequest $request)
+    {
+        try {
+            $user = new User();
+            $user->password = Hash::make($request->input('password'));
+            $user->name = $request->name;
+            $user->phone = $request->phone;
+
+            //check phone number
+            if (!$this->checkPhoneNumber($request->phone)) {
+                return redirect()->route('website.auth.register')
+                    ->withErrors('Định dang số điện thoại không chính xác.')
+                    ->withInput();
+            }
+
+            //check phone number exist
+            $findUser = User::where('phone', $request->phone)->first();
+            if ($findUser) {
+                return redirect()->route('website.auth.register')
+                    ->withErrors('Số điện thoại đã được sử dụng để đăng kí, xin vui lòng nhập số khác.')
+                    ->withInput();
+            }
+
+            if ($request->input('referrer_code')) {
+                //get referrer user
+                $referrer = User::where('invite_code', $request->input('referrer_code'))->first();
+                $user->referrer_code = $referrer->invite_code;
+                $user->referrer_user_id = $referrer->id;
+            }
+            $user->last_time_login = date('Y-m-d H:i:s');
+            $user->save();
+            Auth::login($user, true);
+            return redirect()->route('website.home.index');
+        } catch (\Exception $exception) {
+            return redirect()->route('website.auth.register')
+                ->withErrors(trans('common.have_problem_try_again'))
+                ->withInput();
+        }
+    }
+
+    private function checkPhoneNumber($string)
+    {
+        // Allow +, - and . in phone number
+        $filtered_phone_number = filter_var($string, FILTER_SANITIZE_NUMBER_INT);
+        // Remove "-" from number
+        $phone_to_check = str_replace("-", "", $filtered_phone_number);
+        // Check the lenght of number
+        // This can be customized if you want phone number from a specific country
+        if (strlen($phone_to_check) < 10 || strlen($phone_to_check) > 14) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

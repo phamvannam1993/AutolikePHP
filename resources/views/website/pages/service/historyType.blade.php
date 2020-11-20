@@ -13,10 +13,12 @@
                         <tr>
                             <th>#</th>
                             <th>Mã giao dịch</th>
-                            <th>Thành viên</th>
                             <th>UID/PageID</th>
                             <th>Số lượt thành công</th>
                             <th>Tổng số lượt</th>
+                            <th>Ngày bắt đầu</th>
+                            <th>Thời gian Hủy/ Hoàn thành</th>
+                            <th>Thao tác</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -31,15 +33,31 @@
                                     </a>
                                 </td>
                                 <td>
-                                    {{ isset($userArr[$service->user_id]) ? $userArr[$service->user_id] : '' }}
-                                </td>
-                                <td>
                                     <a href="https://www.facebook.com/{{ $service->fanpage_id }}" target="_blank" style="text-decoration: underline;">
                                         {{ $service->fanpage_id }}
                                     </a>
                                 </td>
-                                <td>{{ $service->number -  $service->number_likes}}</td>
+                                <td>
+                                    {{ $service->number -  $service->number_likes}}
+                                </td>
                                 <td>{{ $service->number }}</td>
+                                <td>
+                                    {{date('Y-m-d H:i:s', strtotime($service->created_at))}}
+                                </td>
+                                <td>{{ $service->cancelled_at }}</td>
+                                <td>
+                                    @if ($service->number -  $service->number_likes < $service->number && $service->status != \App\Models\Service::STATUS_CANCEL)
+                                    <span class="cancel-service-{{ $service->code }} label label-success"
+                                          id=""
+                                          style="font-size: 100%;"
+                                          onclick="cancelService(this, '{{ $service->code }}')"
+                                    >
+                                        <strong>
+                                            Hủy
+                                        </strong>
+                                    </span>
+                                    @endif
+                                </td>
                             </tr>
                         @endforeach
                         </tbody>
@@ -73,6 +91,39 @@
         var dateValue = $('#datepicker').datepicker('getDate');
         dateValue = $.datepicker.formatDate("yy-mm-dd", dateValue);
         window.location.href = '{{ route('website.service.index') }}?date=' + dateValue;
+    }
+
+    function cancelService(element, serviceCode) {
+        var btn = $(element);
+        $.ajax({
+            type: "POST",
+            url: '{{ route('website.service.apiCancel') }}',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: {
+                code: serviceCode,
+                status: status
+            },
+            beforeSend: function() {
+                btn.prop('disabled', true);
+                btn.prepend('<i class="fa fa-spinner fa-spin"></i>');
+            },
+            success: function(response) {
+                btn.prop('disabled', false);
+                btn.find('i.fa-spinner').remove();
+                if (response.success == 1) {
+                    $('.cancel-service-' + response.data.code).addClass('hidden');
+                    toastr.success(response.message);
+                } else {
+                    toastr.error(response.message);
+                }
+            },
+            complete: function(){
+                btn.prop('disabled', false);
+                btn.find('i.fa-spinner').remove();
+            }
+        });
     }
 </script>
 @endpush

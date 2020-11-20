@@ -6,16 +6,16 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>Farmer 5.0 - @section('title') Admin @show </title>
     <meta name="csrf-token" content="{{ csrf_token() }}" />
+    <title>Farmer 5.0 - @section('title') Home @show </title>
+    
     <link href="{{ url('css') }}/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="{{ url('css') }}/font-awesome.min.css" rel="stylesheet">
     <!-- NProgress -->
     <link href="{{ url('css') }}/nprogress.css" rel="stylesheet">
     <!-- iCheck -->
-    <link href="{{ url('css') }}/green.css?v={{time()}}" rel="stylesheet">
+    <link href="{{ url('css') }}/green.css" rel="stylesheet">
 
     <!-- bootstrap-progressbar -->
     <link href="{{ url('css') }}/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet">
@@ -48,7 +48,7 @@
         <div class="col-md-3 left_col">
             <div class="left_col scroll-view">
                 <div class="navbar nav_title" style="border: 0;">
-                    <a href="/" class="site_title"><i class="fa fa-paw"></i> <span>Farmer 5.0 </span></a>
+                    <a href="/" class="site_title"><i class="fa fa-paw"></i> <span>Farmer 5.0</span></a>
                 </div>
 
                 <div class="clearfix"></div>
@@ -59,63 +59,41 @@
                     </div>
                     <div class="profile_info">
                         <span>Hi ,</span>
-                        <h2>Admin</h2>
+                        <h2>{{session('dataLogin')['fullname'] ? session('dataLogin')['fullname'] : ''}}</h2>
                     </div>
                 </div>
                 <br />
-
                 <!-- sidebar menu -->
                 <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
                     <div class="menu_section active">
-                        <h3>Chức năng</h3>
+                        <h4 style="color: #ffffff; margin-left: 20px">{{ __('messages.Function') }}</h4>
                         <ul class="nav side-menu">
                             <li>
-                                <a href="{{route('website.home.index')}}"><i class="fa fa-home"></i> Admin </a>
+                                <a href="{{route('website.home.index')}}"><i class="fa fa-home"></i>{{ __('messages.Home') }}  </a>
                             </li>
                             <li>
-                                <a href="{{route('admin.user.list')}}"><i class="fa fa-user"></i> Users</a>
+                                <a href="{{route('admin.view-profile')}}"><i class="fa fa-user"></i>{{ __('messages.Profile') }} </a>
                             </li>
                             <li>
-                                <a href="{{route('admin.domain.list')}}"><i class="fa fa-globe"></i> Domains</a>
+                                <a href="{{route('admin.action-profile.list')}}"><i class="fa fa-user"></i>{{ __('messages.Action Profile') }}</a>
                             </li>
                             <li>
-                                <a href="{{route('admin.email.list')}}"><i class="fa fa-envelope"></i> Email</a>
+                                <a href="{{route('admin.friend.list')}}"><i class="fa fa-users"></i>{{ __('messages.Friends') }}</a>
                             </li>
                             <li>
-                                <a href="{{route('admin.admin.list')}}"><i class="fa fa-user"></i> Admin List</a>
+                                <a href="{{route('admin.clone-facebook.cloneFacebook')}}"><i class="fa fa-facebook"></i>{{ __('messages.Clones') }}</a>
                             </li>
                             <li>
-                                <a href="{{route('admin.action-profile.list')}}"><i class="fa fa-user"></i>Action Profile</a>
+                                <a href="{{route('admin.device.list')}}"><i class="fa fa-adjust"></i>{{ __('messages.Devices') }} </a>
                             </li>
                             <li>
-                                <a href="{{route('admin.friend.list')}}"><i class="fa fa-users"></i>Friend Profile</a>
+                                <a href="{{route('admin.group.list')}}"><i class="fa fa-users"></i>{{ __('messages.Group-Profile') }}</a>
                             </li>
                             <li>
-                                <a href="{{route('admin.clone-facebook.cloneFacebook')}}"><i class="fa fa-facebook"></i>Clones</a>
+                                <a href="{{route('admin.page.list')}}"><i class="fa fa-file"></i>{{ __('messages.Pages') }}</a>
                             </li>
                             <li>
-                                <a href="{{route('admin.group-info.list')}}"><i class="fa fa-facebook"></i>CloneInfo</a>
-                            </li>
-                            <li>
-                                <a href="{{route('admin.token-facebook')}}"><i class="fa fa-facebook"></i>Tokens</a>
-                            </li>
-                            <li>
-                                <a href="{{route('admin.device.list')}}"><i class="fa fa-adjust"></i> Devices</a>
-                            </li>
-                            <li>
-                                <a href="{{route('admin.group.list')}}"><i class="fa fa-users"></i> Group Profile</a>
-                            </li>
-                            <li>
-                                <a href="{{route('admin.page.list')}}"><i class="fa fa-file"></i>Pages</a>
-                            </li>
-                            <li>
-                                <a href="{{route('admin.setting.form')}}"><i class="fa fa-gear"></i>Settings</a>
-                            </li>
-                            <li>
-                                <a href="{{route('admin.package.list')}}"><i class="fa fa-gift"></i>pakages</a>
-                            </li>
-                            <li>
-                                <a href="{{route('website.transaction.index')}}"><i class="fa fa-money"></i>Nạp tiền</a>
+                                <a href="{{route('website.transaction.index')}}"><i class="fa fa-money"></i>{{ __('messages.Recharge') }}</a>
                             </li>
                         </ul>
                     </div>
@@ -139,11 +117,11 @@
                         <li class="">
                             <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                                 <img src="{{url('images')}}/circled-user-male-skin-type-1-2.png">
-                                Phạm Văn Nam
+                                {{session('dataLogin')['fullname'] ? session('dataLogin')['fullname'] : ''}}
                                 <span class=" fa fa-angle-down"></span>
                             </a>
                             <ul class="dropdown-menu dropdown-usermenu pull-right">
-                                <li><a href="{{ route('admin.logout') }}"><i class="fa fa-sign-out pull-right"></i> Log Out</a></li>
+                                <li><a href="{{ route('admin.logout') }}"><i class="fa fa-sign-out pull-right"></i> {{ __('messages.Log Out') }}</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -160,14 +138,6 @@
         @show
 
 
-        <!-- footer content -->
-        <footer>
-            <div class="pull-right">
-                Gentelella - Bootstrap Admin Template by <a href="https://colorlib.com">Colorlib</a>
-            </div>
-            <div class="clearfix"></div>
-        </footer>
-        <!-- /footer content -->
     </div>
 </div>
 
@@ -175,7 +145,6 @@
 <!-- Bootstrap -->
 <script src="{{ url('js') }}/bootstrap.min.js"></script>
 <script src="{{ url('js') }}/custom.min.js"></script>
-<script src="{{ url('js') }}/toastr.min.js"></script>
 <script src="{{ url('js') }}/tab.js?v={{time()}}"></script>
 @yield('js')
 

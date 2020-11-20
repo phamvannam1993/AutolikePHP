@@ -8,6 +8,7 @@
 
 namespace App\Models;
 
+
 class ServiceHistory extends \Moloquent
 {
     protected $connection = 'mongodb';

@@ -1,0 +1,1 @@
+ajax_view_action_log

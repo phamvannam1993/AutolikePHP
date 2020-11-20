@@ -15,6 +15,7 @@ class SettingSingleton
 {
     private static $instance = null;
     protected $setting = null;
+    protected $connection = 'mongodb';
 
     public function __construct($isSessionInstance = true)
     {

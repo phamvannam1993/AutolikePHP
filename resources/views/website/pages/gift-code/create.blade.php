@@ -7,7 +7,7 @@
                     <h2>Gift code <small>Tạo gift code cho hệ thống</small></h2>
                     <div class="clearfix"></div>
                 </div>
-                <div class="x_content">
+                <div class="">
                     <br />
                     <form id="create-gift-code" data-parsley-validate class="form-horizontal form-label-left">
                         <div class="form-group">
@@ -78,6 +78,7 @@
             }
         });
     });
+
 
     $('body').on('keydown', 'input.number', function (e) {
         if(checkKeyCodeNumber(e)) e.preventDefault();

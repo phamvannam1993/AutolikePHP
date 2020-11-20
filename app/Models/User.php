@@ -23,7 +23,7 @@ class User extends \Moloquent
      * @var array
      */
     protected $fillable = [
-        '_id', 'username', 'password', 'invite_code', 'agency_status', 'deposit_amount', 'balance_use', 'referrer_code', 'referrer_user_id', 'name', 'fullname', 'status', 'role', 'pass_show', 'email', 'token', 'created_at', 'updated_at'
+        '_id', 'username', 'password', 'invite_code', 'deposit_amount', 'balance', 'balance_use', 'referrer_code', 'referrer_user_id', 'name', 'fullname', 'status', 'role', 'pass_show', 'email', 'token', 'created_at', 'updated_at'
     ];
     public $timestamps = true;
     protected $dates = ['created_at', 'updated_at'];

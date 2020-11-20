@@ -88,21 +88,16 @@ if(action) {
     })
 }
 
-function updateStatus(element, code, status) {
-    var url = $('#UrlUpdateTransaction').val()
-    var StatusCompleted1 = $('#StatusCompleted1').val()
-    var StatusCompleted2 = $('#StatusCompleted2').val()
-    var StatusCompleted3 = $('#StatusCompleted3').val()
+function makeTransaction(element, planId) {
     var btn = $(element);
     $.ajax({
         type: "POST",
-        url: url,
+        url: $('#urlSave').val(),
         headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     },
     data: {
-        code: code,
-            status: status
+        plan_id: planId
     },
     beforeSend: function() {
         btn.prop('disabled', true);
@@ -112,20 +107,7 @@ function updateStatus(element, code, status) {
         btn.prop('disabled', false);
         btn.find('i.fa-spinner').remove();
         if (response.success == 1) {
-            if (response.data.status == StatusCompleted1) {
-                $('.view-status-pending-' + code).addClass('hidden');
-                $('.view-status-expired-' + code).addClass('hidden');
-                $('.view-status-completed-' + code).removeClass('hidden');
-            } else if (response.data.status == StatusCompleted2) {
-                $('.view-status-completed-' + code).addClass('hidden');
-                $('.view-status-expired-' + code).addClass('hidden');
-                $('.view-status-pending-' + code).removeClass('hidden');
-            } else if (response.data.status == StatusCompleted3) {
-                $('.view-status-completed-' + code).addClass('hidden');
-                $('.view-status-pending-' + code).addClass('hidden');
-                $('.view-status-expired-' + code).removeClass('hidden');
-            }
-            toastr.success(response.message);
+            window.location.href = $('#urlRedirect').val() +'/'+ response.data.code;
         } else {
             toastr.error(response.message);
         }

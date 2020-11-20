@@ -16,7 +16,6 @@ use App\Models\GroupProfile;
 use App\Models\ActionProfile;
 use Illuminate\Http\Request;
 use App\Helpers\LoginHelper;
-use App\Helpers\StringHelper;
 
 class UserController extends Controller
 {
@@ -27,8 +26,7 @@ class UserController extends Controller
     public function index()
     {
         $userList = User::where('role', 2)->paginate(100);
-        $actionArr = [];
-        return view('admin.user.list', ['userList' => $userList, 'actionArr' => $actionArr]);
+        return view('admin.user.list', ['userList' => $userList]);
     }
 
     public function addUser(request $request)
@@ -56,52 +54,60 @@ class UserController extends Controller
             $username =  $user['username'];
             $sffledStr= str_shuffle('abscdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()_-+');
             $uniqueString = md5(time().$sffledStr);
-            $userCheck = User::where('username', $username)->get()->toArray();
-            if (!$this->checkPhoneNumber($username)) {
-                $messageError = 'Định dang số điện thoại không chính xác.';
-            } else if(!empty($userCheck)) {
-                $messageError = 'Số điện thoại đã tồn tại';
-            } else {
+            $messageError = $this->getMessageError($username, $request);
+            $userDetail = $request['user'];
+            if(empty($messageError)) {
                 $user['pass_show'] = $user['password'];
-                $user['invite_code']  = StringHelper::generateCode();
-                $user['agency_status'] = '2';
+                $user['balance_use'] = 0;
+                $user['balance'] = 0;
+                $user['deposit_amount'] = 0;
                 $user['password'] = md5($user['password']);
                 $user['updated_at'] = date('Y-m-d H:i:s');
                 $user['created_at'] = date('Y-m-d H:i:s');
-                $user['status'] = \App\Models\User::STATUS_ACTIVE;
+                $user['status'] = User::STATUS_ACTIVE;
                 $user['token'] = $uniqueString;
+                if ($request['referrer_code']) {
+                    $referrer = User::where('invite_code', $request->input('referrer_code'))->first();
+                    $user['referrer_code'] = $referrer->invite_code;
+                    $user['referrer_user_id'] = $referrer->id;
+                }
                 $result = User::create($user);
+                $dataLogin = $result;
                 if($result) {
-                    return redirect(route('website.user.index'));
+                    $dataLogin['userId'] = $result['_id'];
+                    session(['dataLogin' => $dataLogin]);
+                    return redirect()->route('website.home.index');
                 }
             }
-            $userDetail = $user;
         }
-        $dataList = ['messageError' => $messageError];
+        if($request['userId']) {
+           $userDetail = User::where('_id', $request['userId'])->get()->first();
+        }
+        $dataList = ['messageError' => $messageError, 'userDetail' => $userDetail];
         return view('admin.user.form', $dataList);
     }
 
-    public function save(request $request) {
-        if(!empty($request['user'])) {
-            $user = $request['user'];
-            $user['pass_show'] = $user['password'];
-            $user['balance'] = $user['balance'];
-            $user['password'] = md5($user['password']);
-            $user['updated_at'] = date('Y-m-d H:i:s');
-            if($user['userId'] == 0) {
-                unset($user['userId']);
-                $user['created_at'] = date('Y-m-d H:i:s');
-                $result = User::insert($user);
-            } else {
-                $userId = $user['userId'];
-                unset($user['userId']);
-                $result = User::where('_id', $userId)->update($user);
-            }
-            
-            if($result) {
-                return redirect(route('admin.user.list'));
-            }
+    function getMessageError($username, $request) {
+        $userCheck = User::where('username', $username)->get()->toArray();
+        $messageError = '';
+        if(empty($request['g-recaptcha-response'])) {
+            $messageError = 'Bạn cần xác thực google captcha';
         }
+        if(!empty($userCheck)) {
+            $messageError = 'Số điện thoại đã tồn tại';
+        }
+        if (!$this->checkPhoneNumber($username)) {
+            $messageError = 'Định dang số điện thoại không chính xác.';
+        }
+        if ($request['referrer_code']) {
+            $referrer = User::where('invite_code', $request->input('referrer_code'))->first();
+            if(empty($referrer)) {
+                $messageError = 'Mã giới thiệu chưa chính xác.';
+            }
+        } else {
+            $messageError = 'Vui lòng nhập mã giới thiệu.';
+        }
+        return $messageError;
     }
 
     public function deleleUser($userId = 0) {
@@ -113,46 +119,34 @@ class UserController extends Controller
         }
     }
 
-    function device(request $request) {
-        $userId = $request['uid'];
-        $groupArr = [];
-        $actionArr = [];
-        $groupList = GroupProfile::where('user_id', $userId)->get()->toArray();
-        $actionProfile = ActionProfile::get()->toArray();
-        if(!empty($groupList)) {
-            foreach ($groupList as $group) {
-                $groupArr[$group['_id']] = $group['name'];
-            }
-        }
-
-        if(!empty($actionProfile)) {
-            foreach ($actionProfile as $action) {
-                $actionArr[$action['_id']] = $action['name'];
-            }
-        }
-        $deviceList = Device::where('user_id', $userId)->paginate(100);
-        return view('admin.user.ajax_view_device', ['deviceList' => $deviceList, 'groupArr' => $groupArr, 'actionArr' => $actionArr ]);
-    }
-
-    public function detail($userId = 0) {
+    public function changPassword(request $request) {
         $LoginHelper = new LoginHelper();
         $checkLogin = $LoginHelper->checkSession();
         if(!$checkLogin) {
             return redirect(route('admin.login'));
         }
-        $userDetail = User::where('_id', $userId)->get()->first();
-        return view('admin.user.detail', compact('userDetail'));
-    }
-
-    public function profile() {
-        $LoginHelper = new LoginHelper();
-        $checkLogin = $LoginHelper->checkSession();
-        if(!$checkLogin) {
-            return redirect(route('admin.login'));
+        $code = 1;
+        $message = '';
+        if($request['user']) {
+            $requestUser = $request['user'];
+            $checkUser = User::where('_id', $checkLogin['userId'])->where('password', md5($requestUser['password']))->first();
+            if(!empty($checkUser)) {
+                $password = md5($requestUser['password_new']);
+                if($requestUser['password_new'] == $requestUser['password_confirm']) {
+                    User::where('_id', $checkLogin['userId'])->update(['password' => $password]);
+                    $message = 'Thay đổi mật khẩu thành công';
+                    $request['user'] = [];
+                } else {
+                    $message = 'Mật khẩu mới và mật khẩu xác nhận không trùng nhau';
+                    $code = 0;
+                }
+            } else {
+                $message = 'Sai mật khẩu';
+                $code = 0;
+            }
         }
-        $userId = $checkLogin['userId'];
-        $userDetail = User::where('_id', $userId)->get()->toArray();
-        return view('admin.view-profile', compact('userDetail'));
+        $user = $request['user'] ? $request['user'] : [];
+        return view('admin.user.change_pass', ['user' => $user, 'code' => $code, 'message' => $message]);
     }
 
     private function checkPhoneNumber($string)

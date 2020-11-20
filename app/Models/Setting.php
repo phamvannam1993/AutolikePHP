@@ -11,10 +11,13 @@ namespace App\Models;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
 
 class Setting extends \Moloquent
 {
     use Notifiable;
+
+    use HasTimestamps;
     protected $connection = 'mongodb';
     protected $collection = 'settings';
 
@@ -24,7 +27,7 @@ class Setting extends \Moloquent
      * @var array
      */
     protected $fillable = [
-        'id', 'key', 'value', 'name', 'description', 'created_at', 'updated_at'
+        'id', 'key', 'value', 'description', 'created_at', 'updated_at'
     ];
 
     /**

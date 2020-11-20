@@ -29,8 +29,7 @@ class GiftCodeRequest extends FormRequest
     {
         return [
             'code.required' => 'Mã gift code không được bỏ trống',
-            'g-recaptcha-response.required' => 'Bạn cần xác thực google captcha',
-            'validation.captcha' => 'Xác thực captcha không thành công.'
+            'g-recaptcha-response.required' => 'Bạn cần xác thực google captcha'
         ];
     }
 }

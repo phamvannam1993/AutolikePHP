@@ -17,7 +17,7 @@
                                 <td class="text-right col-xs-3"><strong>Mã giao dịch</strong></td>
                                 <td>
                                     <p style="font-size: large;">{{ $transaction->code }}</p>
-                                    <small>{{ isset($userArr[$transaction->user_id]) ? $userArr[$transaction->user_id] : '' }}</small>
+                                    <small>Cung cấp mã hóa đơn này nếu bạn cần hỗ trợ về đơn hàng.</small>
                                 </td>
                             </tr>
                             <tr>
@@ -40,7 +40,7 @@
                             </tr>
                             <tr>
                                 <td class="text-right col-xs-3"><strong>Trạng thái</strong></td>
-                                <td>
+                                <td class="transaction-status">
                                     @if($transaction->status == \App\Models\Transaction::STATUS_PENDING)
                                         <span class="label label-warning" style="font-size: 100%;">
                                         <i class="fa fa-spinner fa-spin"></i>
@@ -85,3 +85,32 @@
         </div>
     </div>
 @endsection
+
+<script>
+    //get subscribe channel for user
+    @php
+        $loggedUser = session('dataLogin');
+        $loggedUser = \Illuminate\Support\Facades\Auth::user();
+        $personalChannel = md5( $loggedUser['userId']. '-' . $loggedUser['created_at']);
+    @endphp
+
+    window.onload = function(){
+        var personalChannel = '{{ $personalChannel }}';
+        // Enable pusher logging - don't include this in production
+        Pusher.logToConsole = true;
+        var pusher = new Pusher('7e4eaeb1b8ee811d33f2', {
+            cluster: 'ap1',
+            forceTLS: true
+        });
+        var channel = pusher.subscribe(personalChannel);
+        channel.bind('update-transaction-status', function(data) {
+            var receiveData = JSON.parse(JSON.stringify(data));
+            if (receiveData.success == 1){
+                $('.transaction-status').html('');
+                $('.transaction-status').html('<span class="label label-success transaction-status-completed" style="font-size: 100%;"> Thành công </span>');
+                toastr.success(receiveData.message);
+            }
+        });
+    }
+
+</script>

@@ -7,13 +7,26 @@
  */
 
 namespace App\Helpers;
-
+use App\Models\User;
 
 class LoginHelper
 {
     public function checkSession() {
+        $language = \Session::get('website_language', config('app.locale'));
+        if($language) {
+            \App::setLocale($language);
+        }
 		$value = session('dataLogin');
 		if($value) {
+		    $userDetail = User::where('_id', $value['userId'])->where('status', User::STATUS_ACTIVE)->first();
+            $dataLogin = $userDetail;
+            if($userDetail) {
+                $dataLogin['userId'] = $userDetail['_id'];
+                session(['dataLogin' => $dataLogin]);
+            } else {
+                session(['dataLogin' => '']);
+                return false;
+            }
 			return $value;
 		} else {
 			return false;

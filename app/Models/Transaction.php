@@ -9,16 +9,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Transaction extends \Moloquent
 {
-    use SoftDeletes;
-    protected $connection = 'mongodb';
-    protected $collection = 'transacions';
     const STATUS_PENDING = 'Pending';
     const STATUS_COMPLETED = 'Completed';
     const STATUS_EXPIRED = 'Expired';
+
+    protected $connection = 'mongodb';
+    protected $collection = 'transacions';
     /**
      * The attributes that are mass assignable.
      *
@@ -36,9 +35,4 @@ class Transaction extends \Moloquent
      */
     protected $hidden = [
     ];
-
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id', 'id');
-    }
 }

@@ -37,7 +37,7 @@ class HomeController extends Controller
         $settingsSingleton = new SettingSingleton();
         $settings = $settingsSingleton->getSetting();
         $packageList = Package::get()->toArray();
-        return view('website.pages.dashboard.home', compact('settings', 'packageList'));
+        return view('website.pages.dashboard.home', ['settings' => $settings, 'packageList' => $packageList]);
     }
 
     public function changeLanguage($language)

@@ -24,11 +24,12 @@
                         <tr>
                             <th>#</th>
                             <th>Mã giao dịch</th>
-                            <th>UID/PageID</th>
-                            <th>Số likes</th>
+                            <th>UID/PageId</th>
                             <th>Số bài post</th>
+                            <th>Số like</th>
                             <th>Thanh toán</th>
-                            <th>Ghi chú</th>
+                            <th>Trạng thái</th>
+                            <th>Thời gian hoàn thành</th>
                             <th>Thao tác</th>
                         </tr>
                         </thead>
@@ -48,16 +49,8 @@
                                         {{ $service->fanpage_id }}
                                     </a>
                                 </td>
-                                <td>
-                                    <span class="label label-info" style="font-size: 100%;">
-                                        {{$dataService[$service->code]['number_like_per_post']}}
-                                    </span>
-                                </td>
-                                <td>
-                                    <span class="label label-warning" style="font-size: 100%;">
-                                         {{$dataService[$service->code]['number_post']}}
-                                    </span>
-                                </td>
+                                <td>{{ $dataService[$service->code]['number_post'] }}</td>
+                                <td>{{ $dataService[$service->code]['number_like_per_post'] }}</td>
                                 <td>
                                     <span class="label label-success" style="font-size: 100%;">
                                         <strong>
@@ -66,14 +59,15 @@
                                     </span>
                                 </td>
                                 <td>
-                                @if($dataService[$service->code]['status'] == 1)
-                                    <span class="btn btn-primary">Hoàn tiền</span>
-                                @elseif($dataService[$service->code]['status'] == 3)
-                                    <span class="btn btn-danger">Dừng dịch vụ</span>
-                                @else
-                                    <span class="btn btn-success">Hoàn thành</span>
-                                @endif
+                                    @if($dataService[$service->code]['status'] == 1)
+                                        <span class="btn btn-primary">Hoàn tiền</span>
+                                    @elseif($dataService[$service->code]['status'] == 3)
+                                        <span class="btn btn-danger">Dừng dịch vụ</span>
+                                    @else
+                                        <span class="btn btn-success">Hoàn thành</span>
+                                    @endif
                                 </td>
+                                <td>{{ $dataService[$service->code]['date_time'] }}</td>
                                 <td>
                                     <a href="javascript:;" class="btn btn-success">
                                         Chi tiết

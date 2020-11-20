@@ -8,9 +8,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
 
 class GiftCodeUsed extends \Moloquent
 {
+    use HasTimestamps;
     protected $connection = 'mongodb';
     protected $collection = 'gift_code_used';
     /**
